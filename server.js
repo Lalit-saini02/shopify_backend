@@ -65,7 +65,7 @@ app.use(cors());
 app.use(express.json());
 
 app.get("/get-metafield", async (req, res) => {
-  const { customerId } = req.query;
+  const customerId  = req.headers["ownerid"];
   const accessToken = process.env.SHOPIFY_ACCESS_TOKEN;
 
   if (!customerId) {
