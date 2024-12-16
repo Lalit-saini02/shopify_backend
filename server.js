@@ -1,59 +1,3 @@
-// const express = require("express");
-// const dotenv = require("dotenv").config();
-// const cors = require("cors");
-
-
-// const PORT = process.env.PORT || 8080;
-// const app = express();
-
-// app.use(cors());
-// app.use(express.json());
-
-// app.post("/update-metafield", async (req, res) => {
-//     const { customerId, metafield } = req.body;
-//     const accessToken = process.env.SHOPIFY_ACCESS_TOKEN || "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";
-//     console.log("customerId", customerId);
-//     console.log("metafield", metafield);
-
-//     if (!customerId || !metafield) {
-//         return res.status(400).json({ success: false, error: "Missing customerId or metafield data" });
-//     };
-
-//     try {
-//         const response = await fetch(
-//             `https://sandeepgupta.myshopify.com/admin/api/2023-01/customers/${customerId}/metafields.json`,
-//             {
-//                 method: "POST",
-//                 headers: {
-//                     "Content-Type": "application/json",
-//                     "X-Shopify-Access-Token": accessToken,
-//                 },
-//                 body: JSON.stringify({ metafield }),
-//             }
-//         );
-
-//         if (response.ok) {
-//             const data = await response.json();
-//             return res.status(200).json({ success: true, data });
-//         }
-
-//         const error = await response.json();
-//         return res.status(400).json({ success: false, error });
-//     } catch (error) {
-//         console.error("Error updating metafield:", error);
-//         res.status(500).json({ success: false, error: "Internal Server Error" });
-//     }
-// });
-
-// app.get("/", (req, res) => {
-//     res.status(200).send(`<h1>Hello, Welcome back Boss! How is your day Today?</h1>`);
-// });
-
-// app.listen(PORT, () => {
-//     console.log(`Your Server is running at PORT ${PORT}`);
-// });
-
-
 const express = require("express");
 const dotenv = require("dotenv").config();
 const cors = require("cors"); // Ensure this is installed if not already (`npm install node-fetch`)
@@ -64,8 +8,64 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.get("/get-metafield", async (req, res) => {
-  const customerId  = req.headers["ownerid"];
+
+
+// app.get("/get-metafield", async (req, res) => {
+//   const customerId  = req.headers["ownerid"];
+//   const accessToken = process.env.SHOPIFY_ACCESS_TOKEN;
+
+//   if (!customerId) {
+//     return res.status(400).json({
+//       success: false,
+//       error: "Customer ID is required.",
+//     });
+//   }
+
+//   try {
+//     const response = await fetch(
+//       `https://sandeepgupta.myshopify.com/admin/api/2023-01/customers/${customerId}/metafields.json`,
+//       {
+//         method: "GET",
+//         headers: {
+//           "Content-Type": "application/json",
+//           "X-Shopify-Access-Token": accessToken,
+//         },
+//       }
+//     );
+
+//     if (response.ok) {
+//       const data = await response.json();
+
+//       // Filter for the TIN number metafield
+//       const tinMetafield = data.metafields.find(
+//         (mf) => mf.namespace === "custom" && mf.key === "tin_number"
+//       );
+
+//       return res.status(200).json({
+//         success: true,
+//         metafield: tinMetafield || null, // Return the metafield if found
+//       });
+//     } else {
+//       const error = await response.json();
+//       return res.status(response.status).json({
+//         success: false,
+//         error,
+//       });
+//     }
+//   } catch (error) {
+//     console.error("Error fetching metafield:", error);
+//     res.status(500).json({
+//       success: false,
+//       error: "Internal Server Error",
+//     });
+//   }
+// });
+
+
+app.post("/getting-metadata", async (req, res) => {
+  const customerId = req.header("customerId");
+  console.log(req.header);
+  
   const accessToken = process.env.SHOPIFY_ACCESS_TOKEN;
 
   if (!customerId) {
@@ -86,9 +86,16 @@ app.get("/get-metafield", async (req, res) => {
         },
       }
     );
-
     if (response.ok) {
       const data = await response.json();
+
+        // Check for metafields existence
+        if (!data.metafields) {
+          return res.status(404).json({
+            success: false,
+            error: "Metafields not found for this customer.",
+          });
+        }  
 
       // Filter for the TIN number metafield
       const tinMetafield = data.metafields.find(
@@ -113,6 +120,7 @@ app.get("/get-metafield", async (req, res) => {
       error: "Internal Server Error",
     });
   }
+
 });
 
 // Endpoint for handling data from the Checkout UI Extension and posting it to Shopify API
