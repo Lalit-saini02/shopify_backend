@@ -8,63 +8,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-
-
-// app.get("/get-metafield", async (req, res) => {
-//   const customerId  = req.headers["ownerid"];
-//   const accessToken = process.env.SHOPIFY_ACCESS_TOKEN;
-
-//   if (!customerId) {
-//     return res.status(400).json({
-//       success: false,
-//       error: "Customer ID is required.",
-//     });
-//   }
-
-//   try {
-//     const response = await fetch(
-//       `https://sandeepgupta.myshopify.com/admin/api/2023-01/customers/${customerId}/metafields.json`,
-//       {
-//         method: "GET",
-//         headers: {
-//           "Content-Type": "application/json",
-//           "X-Shopify-Access-Token": accessToken,
-//         },
-//       }
-//     );
-
-//     if (response.ok) {
-//       const data = await response.json();
-
-//       // Filter for the TIN number metafield
-//       const tinMetafield = data.metafields.find(
-//         (mf) => mf.namespace === "custom" && mf.key === "tin_number"
-//       );
-
-//       return res.status(200).json({
-//         success: true,
-//         metafield: tinMetafield || null, // Return the metafield if found
-//       });
-//     } else {
-//       const error = await response.json();
-//       return res.status(response.status).json({
-//         success: false,
-//         error,
-//       });
-//     }
-//   } catch (error) {
-//     console.error("Error fetching metafield:", error);
-//     res.status(500).json({
-//       success: false,
-//       error: "Internal Server Error",
-//     });
-//   }
-// });
-
-
 app.post("/getting-metadata", async (req, res) => {
   const customerId = req.header("customerId");
-  console.log(req.header);
+  console.log("customerId1111",customerId);
   
   const accessToken = process.env.SHOPIFY_ACCESS_TOKEN;
 
@@ -82,6 +28,7 @@ app.post("/getting-metadata", async (req, res) => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
+          "Access-Control-Allow-Origin":"*",
           "X-Shopify-Access-Token": accessToken,
         },
       }
@@ -101,6 +48,8 @@ app.post("/getting-metadata", async (req, res) => {
       const tinMetafield = data.metafields.find(
         (mf) => mf.namespace === "custom" && mf.key === "tin_number"
       );
+
+      console.log("tinMetafield",tinMetafield)
 
       return res.status(200).json({
         success: true,
