@@ -13,6 +13,13 @@ app.post("/getting-metadata", async (req, res) => {
   const accessToken = process.env.SHOPIFY_ACCESS_TOKEN;
   console.log("customerId1111", customerId);
 
+   // Extract the numeric part from the `gid://shopify/Customer/` string
+   if (customerId.startsWith("gid://shopify/Customer/")) {
+    customerId = customerId.split("/").pop(); // Extracts the last part after the last "/"
+  }
+
+  console.log("Trimmed customerId:", customerId);
+
 
   if (!customerId) {
     return res.status(400).json({
@@ -23,7 +30,7 @@ app.post("/getting-metadata", async (req, res) => {
 
   try {
     const response = await fetch(
-      `https://sandeepgupta.myshopify.com/admin/api/2023-01/customers/6452443381830/metafields.json`,
+      `https://sandeepgupta.myshopify.com/admin/api/2023-01/customers/${customerId}/metafields.json`,
       {
         method: "GET",
         headers: {
