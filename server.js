@@ -9,7 +9,7 @@ app.use(cors());
 app.use(express.json());
 
 app.post("/getting-metadata", async (req, res) => {
-  const customerId = req.header("customerId");
+  let customerId = req.header("customerId");
   const accessToken = process.env.SHOPIFY_ACCESS_TOKEN;
   console.log("customerId1111", customerId);
 
