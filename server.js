@@ -32,6 +32,8 @@ app.post("/getting-metadata", async (req, res) => {
         },
       }
     );
+
+    console.log(response)
     if (response.ok) {
       const data = await response.json();
 
@@ -56,10 +58,10 @@ app.post("/getting-metadata", async (req, res) => {
       });
     } else {
       const error = await response.json();
-      console.error("Shopify API error:", errorData);
+      console.error("Shopify API error:", error);
       return res.status(response.status).json({
         success: false,
-        error: errorData,
+        error: error,
       });
     }
   } catch (error) {
