@@ -10,9 +10,9 @@ app.use(express.json());
 
 app.post("/getting-metadata", async (req, res) => {
   const customerId = req.header("customerId");
-  console.log("customerId1111",customerId);
-  
   const accessToken = process.env.SHOPIFY_ACCESS_TOKEN;
+  console.log("customerId1111", customerId);
+
 
   if (!customerId) {
     return res.status(400).json({
@@ -28,7 +28,6 @@ app.post("/getting-metadata", async (req, res) => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "Access-Control-Allow-Origin":"*",
           "X-Shopify-Access-Token": accessToken,
         },
       }
@@ -36,20 +35,20 @@ app.post("/getting-metadata", async (req, res) => {
     if (response.ok) {
       const data = await response.json();
 
-        // Check for metafields existence
-        if (!data.metafields) {
-          return res.status(404).json({
-            success: false,
-            error: "Metafields not found for this customer.",
-          });
-        }  
+      // Check for metafields existence
+      if (!data.metafields || data.metafields.length === 0) {
+        return res.status(404).json({
+          success: false,
+          error: "No metafields found for the given customer.",
+        });
+      }
 
       // Filter for the TIN number metafield
       const tinMetafield = data.metafields.find(
         (mf) => mf.namespace === "custom" && mf.key === "tin_number"
       );
 
-      console.log("tinMetafield",tinMetafield)
+      console.log("tinMetafield", tinMetafield)
 
       return res.status(200).json({
         success: true,
@@ -57,14 +56,15 @@ app.post("/getting-metadata", async (req, res) => {
       });
     } else {
       const error = await response.json();
+      console.error("Shopify API error:", errorData);
       return res.status(response.status).json({
         success: false,
-        error,
+        error: errorData,
       });
     }
   } catch (error) {
-    console.error("Error fetching metafield:", error);
-    res.status(500).json({
+    console.error("Error fetching metafields:", error);
+    return res.status(500).json({
       success: false,
       error: "Internal Server Error",
     });
