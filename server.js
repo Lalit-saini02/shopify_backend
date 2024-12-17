@@ -23,7 +23,7 @@ app.post("/getting-metadata", async (req, res) => {
 
   try {
     const response = await fetch(
-      `https://sandeepgupta.myshopify.com/admin/api/2023-01/customers/${customerId}/metafields.json`,
+      `https://sandeepgupta.myshopify.com/admin/api/2023-01/customers/6452443381830/metafields.json`,
       {
         method: "GET",
         headers: {
