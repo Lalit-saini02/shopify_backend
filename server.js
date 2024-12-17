@@ -11,14 +11,11 @@ app.use(express.json());
 app.post("/getting-metadata", async (req, res) => {
   let customerId = req.header("customerId");
   const accessToken = process.env.SHOPIFY_ACCESS_TOKEN;
-  console.log("customerId1111", customerId);
 
    // Extract the numeric part from the `gid://shopify/Customer/` string
    if (customerId.startsWith("gid://shopify/Customer/")) {
     customerId = customerId.split("/").pop(); // Extracts the last part after the last "/"
   }
-
-  console.log("Trimmed customerId:", customerId);
 
 
   if (!customerId) {
@@ -40,7 +37,6 @@ app.post("/getting-metadata", async (req, res) => {
       }
     );
 
-    console.log(response)
     if (response.ok) {
       const data = await response.json();
 
@@ -56,8 +52,6 @@ app.post("/getting-metadata", async (req, res) => {
       const tinMetafield = data.metafields.find(
         (mf) => mf.namespace === "custom" && mf.key === "tin_number"
       );
-
-      console.log("tinMetafield", tinMetafield)
 
       return res.status(200).json({
         success: true,
